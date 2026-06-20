@@ -29,58 +29,59 @@ const ReferralDetails = () => {
     useState('')
 
   useEffect(() => {
-    getReferralDetails()
-  }, [])
+    const getReferralDetails = async () => {
+      setIsLoading(true)
 
-  const getReferralDetails = async () => {
-    setIsLoading(true)
+      const token =
+        Cookies.get('jwt_token')
 
-    const token =
-      Cookies.get('jwt_token')
+      const options = {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
 
-    const options = {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-
-    const response = await fetch(
-      `${apiUrl}?id=${id}`,
-      options,
-    )
-
-    const responseData = await response.json()
-
-    console.log('Referral API Response')
-    console.log(responseData)
-
-    if (response.ok) {
-  const apiData = responseData.data
-
-  let selectedReferral = null
-
-  if (
-      apiData &&
-      Array.isArray(apiData.referrals)
-    ) {
-      selectedReferral =
-        apiData.referrals[0]
-    } else {
-      selectedReferral = apiData
-    }
-
-    setReferralData(
-      selectedReferral,
-    )
-  } else {
-      setErrorMsg(
-        responseData.message,
+      const response = await fetch(
+        `${apiUrl}?id=${id}`,
+        options,
       )
-    }
 
-    setIsLoading(false)
-  }
+      const responseData = await response.json()
+
+      console.log('Referral API Response')
+      console.log(responseData)
+
+      if (response.ok) {
+    const apiData = responseData.data
+
+    let selectedReferral = null
+
+    if (
+        apiData &&
+        Array.isArray(apiData.referrals)
+      ) {
+        selectedReferral =
+          apiData.referrals[0]
+      } else {
+        selectedReferral = apiData
+      }
+
+      setReferralData(
+        selectedReferral,
+      )
+    } else {
+        setErrorMsg(
+          responseData.message,
+        )
+      }
+
+      setIsLoading(false)
+    }
+    getReferralDetails()
+  }, [id])
+
+  
 
   if (isLoading) {
     return (
